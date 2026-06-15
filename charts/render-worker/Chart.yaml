@@ -1,0 +1,17 @@
+apiVersion: v2
+name: render-worker
+description: Reusable Kubernetes chart for GPU-backed render worker orchestration.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - render-farm
+  - kubernetes
+  - eks
+  - gpu
+  - keda
+  - sqs
+home: https://github.com/RayLi-Muye/renderfarm-k8s-toolkit
+maintainers:
+  - name: Ray Li
+

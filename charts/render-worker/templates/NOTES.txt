@@ -1,0 +1,8 @@
+render-worker chart installed.
+
+Next steps:
+1. Provide a private render worker image.
+2. Configure queue and storage environment variables.
+3. Enable KEDA only after the cluster has KEDA installed.
+4. Configure ServiceAccount annotations for IRSA or EKS Pod Identity.
+

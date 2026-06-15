@@ -1,0 +1,43 @@
+{{- if .Values.postprocessJob.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "render-worker.fullname" . }}-{{ .Values.postprocessJob.nameSuffix }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "render-worker.labels" . | nindent 4 }}
+    workload.renderfarm.dev/type: postprocess
+spec:
+  backoffLimit: {{ .Values.postprocessJob.backoffLimit }}
+  ttlSecondsAfterFinished: {{ .Values.postprocessJob.ttlSecondsAfterFinished }}
+  template:
+    metadata:
+      labels:
+        {{- include "render-worker.selectorLabels" . | nindent 8 }}
+        workload.renderfarm.dev/type: postprocess
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ include "render-worker.serviceAccountName" . }}
+      containers:
+        - name: postprocess
+          image: "{{ .Values.postprocessJob.image.repository }}:{{ .Values.postprocessJob.image.tag }}"
+          imagePullPolicy: {{ .Values.postprocessJob.image.pullPolicy }}
+          command:
+            {{- toYaml .Values.postprocessJob.command | nindent 12 }}
+          args:
+            {{- toYaml .Values.postprocessJob.args | nindent 12 }}
+          env:
+            {{- range $name, $value := .Values.postprocessJob.env }}
+            - name: {{ $name }}
+              value: {{ $value | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.postprocessJob.resources | nindent 12 }}
+          volumeMounts:
+            - name: workdir
+              mountPath: /work
+      volumes:
+        - name: workdir
+          emptyDir: {}
+{{- end }}
+

@@ -1,0 +1,46 @@
+namespace:
+  create: true
+  name: render-workers
+
+replicaCount: 1
+
+image:
+  repository: busybox
+  tag: "1.36"
+
+worker:
+  command:
+    - /bin/sh
+    - -c
+  args:
+    - while true; do echo "local placeholder render worker"; sleep 30; done
+  env:
+    AWS_REGION: local
+    ASSET_BUCKET: local-assets
+    OUTPUT_BUCKET: local-output
+    QUEUE_URL: local-queue
+    RENDER_TMP_DIR: /work
+    LOG_LEVEL: debug
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: 128Mi
+  limits:
+    cpu: "500m"
+    memory: 256Mi
+
+gpu:
+  enabled: false
+
+keda:
+  enabled: false
+
+postprocessJob:
+  enabled: true
+  image:
+    repository: busybox
+    tag: "1.36"
+  args:
+    - echo "local postprocess placeholder"
+
