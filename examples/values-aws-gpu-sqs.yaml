@@ -1,0 +1,80 @@
+namespace:
+  create: true
+  name: render-workers
+
+replicaCount: 0
+
+image:
+  repository: 000000000000.dkr.ecr.us-east-1.amazonaws.com/render-worker
+  tag: "0.1.0"
+
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::000000000000:role/render-worker-irsa
+
+worker:
+  command:
+    - /app/render-worker
+  args:
+    - --mode=sqs
+  env:
+    AWS_REGION: us-east-1
+    ASSET_BUCKET: render-assets-example
+    OUTPUT_BUCKET: render-output-example
+    QUEUE_URL: https://sqs.us-east-1.amazonaws.com/000000000000/render-frames
+    RENDER_TMP_DIR: /work
+    LOG_LEVEL: info
+
+resources:
+  requests:
+    cpu: "8"
+    memory: 32Gi
+  limits:
+    cpu: "8"
+    memory: 32Gi
+
+gpu:
+  enabled: true
+  resourceName: nvidia.com/gpu
+  count: 1
+
+nodeSelector:
+  render.node/type: gpu-render
+
+tolerations:
+  - key: render
+    operator: Equal
+    value: gpu
+    effect: NoSchedule
+
+keda:
+  enabled: true
+  minReplicaCount: 0
+  maxReplicaCount: 20
+  pollingInterval: 10
+  cooldownPeriod: 300
+  queueLength: "1"
+  trigger:
+    type: aws-sqs-queue
+    queueURLFromEnv: QUEUE_URL
+    awsRegion: us-east-1
+
+configMap:
+  data:
+    RENDER_PROFILE: gpu-medium
+    FRAME_OUTPUT_FORMAT: exr
+
+secret:
+  create: false
+
+postprocessJob:
+  enabled: true
+  image:
+    repository: 000000000000.dkr.ecr.us-east-1.amazonaws.com/render-postprocess
+    tag: "0.1.0"
+  args:
+    - /app/postprocess --input "${INPUT_PREFIX}" --output "${OUTPUT_PREFIX}"
+  env:
+    AWS_REGION: us-east-1
+    INPUT_PREFIX: s3://render-output-example/job-123/frames/
+    OUTPUT_PREFIX: s3://render-output-example/job-123/final/

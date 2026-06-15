@@ -1,0 +1,23 @@
+{{- if .Values.keda.enabled }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "render-worker.fullname" . }}-sqs
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "render-worker.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    name: {{ include "render-worker.fullname" . }}
+  minReplicaCount: {{ .Values.keda.minReplicaCount }}
+  maxReplicaCount: {{ .Values.keda.maxReplicaCount }}
+  pollingInterval: {{ .Values.keda.pollingInterval }}
+  cooldownPeriod: {{ .Values.keda.cooldownPeriod }}
+  triggers:
+    - type: {{ .Values.keda.trigger.type }}
+      metadata:
+        queueURLFromEnv: {{ .Values.keda.trigger.queueURLFromEnv | quote }}
+        queueLength: {{ .Values.keda.queueLength | quote }}
+        awsRegion: {{ .Values.keda.trigger.awsRegion | quote }}
+{{- end }}
+

@@ -1,0 +1,15 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+*.log
+dist/
+build/
+coverage/
+.idea/
+.vscode/
+tmp/
+*.tgz
+charts/**/charts/
+charts/**/Chart.lock
+
