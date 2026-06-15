@@ -5,6 +5,7 @@
 Required tools:
 
 - Helm 3
+- Optional: kubeconform for Kubernetes schema validation
 
 Commands:
 
@@ -13,6 +14,8 @@ make lint
 make template
 make template-local
 ```
+
+`scripts/render-examples.sh` also validates rendered manifests with kubeconform when it is installed locally. CI installs Helm and kubeconform with pinned versions and SHA256 checksums, then validates built-in Kubernetes resources and KEDA CRDs through a pinned CRD schema catalog.
 
 ## Branching
 
@@ -54,4 +57,3 @@ issue -> branch -> implementation -> local validation -> PR -> GitHub Actions ->
 ```
 
 Do not batch unrelated hardening, demo, and documentation work into one pull request unless the evidence update depends on all of them.
-

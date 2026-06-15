@@ -12,7 +12,8 @@ This file maps resume claims to public repository evidence.
 | Secure AWS access pattern | `charts/render-worker/templates/serviceaccount.yaml`, `charts/render-worker/templates/keda-triggerauthentication.yaml` | Inspect ServiceAccount annotations and KEDA pod identity settings | Started | Least-privilege IAM policies remain environment-specific |
 | Config and secret management | `charts/render-worker/templates/configmap.yaml`, `charts/render-worker/templates/secret.yaml` | Render values with string-like and numeric values; output remains string typed | Implemented | Secrets are injection points, not a production secret manager |
 | Post-render batch processing | `charts/render-worker/templates/postprocess-job.yaml` | Render local or AWS examples and inspect the `Job` | Implemented | Upgrade semantics need hardening before production use |
-| CI/CD discipline | `.github/workflows/ci.yml` | Review GitHub Actions runs; CI executes Helm lint and template rendering | Implemented | Kubernetes schema validation is tracked separately |
+| CI/CD discipline | `.github/workflows/ci.yml` | Review GitHub Actions runs; CI executes Helm lint, template rendering, and kubeconform validation | Implemented | Static schema validation only; no live cluster, admission webhook, KEDA operator, AWS SQS, or GPU node behavior is exercised |
+| Tool install integrity | `.github/workflows/ci.yml` | Inspect CI install steps for Helm and kubeconform checksum verification | Implemented | Checksums verify downloaded release assets, not upstream maintainer identity |
 | Engineering workflow | `.github/ISSUE_TEMPLATE/*`, `.github/pull_request_template.md`, `docs/roadmap.md` | Review merged PRs and open delivery issues | Active | Solo project, but PR discipline is preserved |
 
 This repository supports claims about reusable Kubernetes orchestration patterns. It does not prove production scale, customer usage, proprietary renderer setup, or employer-specific implementation details.
