@@ -34,18 +34,17 @@ Evidence update:
 Repository: RayLi-Muye/renderfarm-k8s-toolkit
 Issue: #15 Add kubeconform validation and Helm install integrity checks
 
-Add Kubernetes schema validation and Helm install integrity checks to GitHub Actions.
+This node has been implemented. Continue only if CI validation needs deeper policy checks.
 
-Expected files:
-- .github/workflows/ci.yml
-- scripts/render-examples.sh if useful
-- docs/development.md
-- docs/evidence-map.md
+Follow-up direction:
+- Add negative chart rendering tests for invalid values.
+- Add policy checks for securityContext, NetworkPolicy, and Secret usage.
 
 Validation:
 - CI passes on a PR.
 - The workflow validates default, local, and AWS GPU/SQS rendered manifests.
-- Helm installation is pinned and integrity-checked.
+- Helm and kubeconform installations are pinned and checksum-verified.
+- KEDA CRDs are validated through a pinned CRD schema catalog.
 
 Evidence update:
 - Update docs/evidence-map.md for schema validation and CI hardening.
