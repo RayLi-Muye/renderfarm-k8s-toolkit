@@ -2,17 +2,23 @@
 
 This file maps resume claims to public repository evidence.
 
-| Claim | Repository Evidence |
-| --- | --- |
-| Kubernetes workload orchestration | `charts/render-worker/templates/deployment.yaml` |
-| GPU-backed worker scheduling | `gpu.enabled`, `nvidia.com/gpu`, `nodeSelector`, and `tolerations` in chart values |
-| Queue-driven scaling | `charts/render-worker/templates/keda-scaledobject.yaml` |
-| S3 asset and output workflow | `worker.env.ASSET_BUCKET`, `worker.env.OUTPUT_BUCKET`, and examples |
-| Secure AWS access pattern | ServiceAccount annotations for IRSA/EKS Pod Identity |
-| Config and secret management | `configmap.yaml`, `secret.yaml`, and values examples |
-| Post-render batch processing | `charts/render-worker/templates/postprocess-job.yaml` |
-| CI/CD discipline | `.github/workflows/ci.yml` |
-| Engineering workflow | issue templates, PR template, roadmap, and GitHub issues |
+| Claim | Evidence | How to Verify | Status | Boundary |
+| --- | --- | --- | --- | --- |
+| Kubernetes workload orchestration | `charts/render-worker/templates/deployment.yaml` | `make template` and inspect rendered worker `Deployment` | Implemented | Does not run a real renderer by default |
+| GPU-backed worker scheduling | `charts/render-worker/templates/deployment.yaml`, `examples/values-aws-gpu-sqs.yaml` | Render the AWS example and inspect `nvidia.com/gpu`, `nodeSelector`, and `tolerations` | Implemented | Does not provision GPU nodes |
+| Queue-driven scaling | `charts/render-worker/templates/keda-scaledobject.yaml` | Render the AWS example and inspect the KEDA `ScaledObject` | Implemented | No live AWS SQS queue is created |
+| KEDA scaler authentication | `charts/render-worker/templates/keda-triggerauthentication.yaml`, `examples/values-aws-gpu-sqs.yaml` | Render the AWS example and inspect `TriggerAuthentication` plus `authenticationRef` | Implemented | Cluster-level KEDA operator identity is configured outside this chart |
+| S3 asset and output workflow | `worker.env.ASSET_BUCKET`, `worker.env.OUTPUT_BUCKET`, `examples/values-aws-gpu-sqs.yaml` | Render examples and inspect worker environment variables | Implemented | No bucket or object storage is created |
+| Secure AWS access pattern | `charts/render-worker/templates/serviceaccount.yaml`, `charts/render-worker/templates/keda-triggerauthentication.yaml` | Inspect ServiceAccount annotations and KEDA pod identity settings | Started | Least-privilege IAM policies remain environment-specific |
+| Config and secret management | `charts/render-worker/templates/configmap.yaml`, `charts/render-worker/templates/secret.yaml` | Render values with string-like and numeric values; output remains string typed | Implemented | Secrets are injection points, not a production secret manager |
+| Post-render batch processing | `charts/render-worker/templates/postprocess-job.yaml` | Render local or AWS examples and inspect the `Job` | Implemented | Upgrade semantics need hardening before production use |
+| CI/CD discipline | `.github/workflows/ci.yml` | Review GitHub Actions runs; CI executes Helm lint and template rendering | Implemented | Kubernetes schema validation is tracked separately |
+| Engineering workflow | `.github/ISSUE_TEMPLATE/*`, `.github/pull_request_template.md`, `docs/roadmap.md` | Review merged PRs and open delivery issues | Active | Solo project, but PR discipline is preserved |
 
 This repository supports claims about reusable Kubernetes orchestration patterns. It does not prove production scale, customer usage, proprietary renderer setup, or employer-specific implementation details.
 
+## Reviewer Notes
+
+- The public chart is intentionally renderer-agnostic. Private V-Ray worker images, licenses, assets, and customer values are out of scope.
+- AWS examples use placeholder account IDs and resource names.
+- Claims should be read as evidence of orchestration, packaging, and review discipline, not as proof of a deployed customer environment.

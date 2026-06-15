@@ -76,6 +76,26 @@
         "queueLength": {
           "type": "string",
           "minLength": 1
+        },
+        "authentication": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            },
+            "podIdentity": {
+              "type": "object",
+              "properties": {
+                "provider": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
         }
       }
     },
