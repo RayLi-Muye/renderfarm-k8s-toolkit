@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   helm:
     name: Helm chart validation
@@ -30,4 +33,3 @@ jobs:
 
       - name: Render AWS GPU SQS example
         run: helm template render-worker charts/render-worker -f examples/values-aws-gpu-sqs.yaml
-
