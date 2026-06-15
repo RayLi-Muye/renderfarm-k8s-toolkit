@@ -54,6 +54,10 @@ keda:
   pollingInterval: 10
   cooldownPeriod: 300
   queueLength: "1"
+  authentication:
+    enabled: true
+    podIdentity:
+      provider: aws
   trigger:
     type: aws-sqs-queue
     queueURLFromEnv: QUEUE_URL

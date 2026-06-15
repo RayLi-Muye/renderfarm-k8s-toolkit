@@ -32,6 +32,8 @@ Every PR should include:
 - Acceptance criteria.
 - Rendered manifest evidence, when Helm templates changed.
 - Security notes when touching Secrets, ServiceAccounts, or IAM-related annotations.
+- Evidence-map updates when the PR changes reviewer-facing claims.
+- A continuation prompt for the next delivery node.
 
 ## Issue Workflow
 
@@ -42,4 +44,14 @@ Issues should be small enough to implement and review independently. Prefer one 
 - CI validation.
 - Documentation.
 - Security hardening.
+
+## Loop Engineering
+
+The preferred loop is:
+
+```text
+issue -> branch -> implementation -> local validation -> PR -> GitHub Actions -> merge -> evidence update -> next issue
+```
+
+Do not batch unrelated hardening, demo, and documentation work into one pull request unless the evidence update depends on all of them.
 

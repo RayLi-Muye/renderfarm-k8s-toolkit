@@ -20,6 +20,14 @@ It owns reusable Kubernetes primitives:
 - ConfigMap and Secret injection points.
 - Post-processing `Job` template.
 
+## Design Constraints and Tradeoffs
+
+- The chart treats renderer images as private adapters. Public examples use placeholders because renderer binaries, license files, and customer scenes must stay outside this repository.
+- KEDA owns runtime worker replica count when autoscaling is enabled. The chart omits `Deployment.spec.replicas` in that mode so Helm upgrades do not reset an active worker pool.
+- KEDA scaler authentication is modeled separately from worker AWS access. The worker ServiceAccount handles job execution permissions; `TriggerAuthentication` handles scaler access to queue metrics.
+- S3/SQS/EKS names in examples are placeholders. Production infrastructure, IAM policies, and cloud resources are expected to live in private environment repositories.
+- Post-processing is currently represented as a chart-rendered `Job`; its production upgrade semantics are tracked separately because Kubernetes Job pod templates are immutable after creation.
+
 ## Workload Flow
 
 ```text
@@ -47,4 +55,3 @@ Typical production integrations include:
 ## Public Repository Boundary
 
 The public repository uses placeholders and examples. Real renderer binaries, license files, customer scenes, cloud account ids, and production values belong in private systems.
-

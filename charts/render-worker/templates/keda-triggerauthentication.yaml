@@ -1,0 +1,12 @@
+{{- if and .Values.keda.enabled .Values.keda.authentication.enabled }}
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: {{ default (printf "%s-sqs-auth" (include "render-worker.fullname" .)) .Values.keda.authentication.name }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "render-worker.labels" . | nindent 4 }}
+spec:
+  podIdentity:
+    provider: {{ .Values.keda.authentication.podIdentity.provider | quote }}
+{{- end }}

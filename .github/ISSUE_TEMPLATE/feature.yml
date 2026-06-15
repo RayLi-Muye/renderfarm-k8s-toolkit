@@ -25,4 +25,21 @@ body:
       description: List concrete checks that make this issue done.
     validations:
       required: true
-
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence Update
+      description: What README, docs, roadmap, or evidence-map updates should accompany the implementation?
+    validations:
+      required: false
+  - type: textarea
+    id: continuation
+    attributes:
+      label: Continuation Prompt
+      description: Write the prompt a future contributor or agent can use to continue this delivery node.
+      placeholder: |
+        Implement ...
+        Validate by ...
+        Update evidence in ...
+    validations:
+      required: true

@@ -27,3 +27,15 @@
 - End-to-end smoke test plan.
 - Resume evidence map with file and command references.
 
+## Delivery Node Format
+
+Each future issue should be small enough to implement as one pull request and should include:
+
+- Goal
+- Non-goals
+- Expected files changed
+- Validation command
+- Evidence-map update
+- Continuation prompt for the next contributor or agent
+
+The continuation prompt should be executable from a fresh checkout. It should name the issue, the intended files, the validation command, and the docs or evidence updates expected after implementation.

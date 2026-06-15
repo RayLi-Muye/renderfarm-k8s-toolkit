@@ -19,5 +19,8 @@ spec:
         queueURLFromEnv: {{ .Values.keda.trigger.queueURLFromEnv | quote }}
         queueLength: {{ .Values.keda.queueLength | quote }}
         awsRegion: {{ .Values.keda.trigger.awsRegion | quote }}
+      {{- if .Values.keda.authentication.enabled }}
+      authenticationRef:
+        name: {{ default (printf "%s-sqs-auth" (include "render-worker.fullname" .)) .Values.keda.authentication.name }}
+      {{- end }}
 {{- end }}
-
