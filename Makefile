@@ -1,4 +1,4 @@
-.PHONY: lint template template-local
+.PHONY: lint template template-local smoke-local
 
 lint:
 	helm lint charts/render-worker
@@ -9,3 +9,5 @@ template:
 template-local:
 	helm template render-worker charts/render-worker -f examples/values-local.yaml
 
+smoke-local:
+	scripts/smoke-local.sh

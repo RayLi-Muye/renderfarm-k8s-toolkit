@@ -56,20 +56,21 @@ Evidence update:
 Repository: RayLi-Muye/renderfarm-k8s-toolkit
 Issue: #7 Add mock render worker and local smoke test path
 
-Add a public mock worker path that exercises the chart contract without proprietary renderer binaries.
+This node has been implemented as a public-safe shell worker and local smoke test. Continue only if the demo needs a container image, Docker Compose path, or richer local queue/object-store substitute.
 
-Expected files:
+Implemented files:
 - workers/mock-render-worker/*
 - examples/*
-- charts/render-worker/values.yaml if new env contract is needed
-- .github/workflows/ci.yml if the smoke test runs in CI
-- docs/architecture.md
+- scripts/smoke-local.sh
+- .github/workflows/ci.yml
+- README.md
+- docs/development.md
 - docs/evidence-map.md
 
 Validation:
-- Local smoke test runs without AWS credentials.
-- CI runs at least one lightweight mock path if practical.
-- README and evidence map clearly distinguish the mock worker from private production renderer images.
+- `make smoke-local` runs without AWS credentials, a real renderer, or a Kubernetes cluster.
+- CI runs the lightweight mock path through `scripts/smoke-local.sh`.
+- README and evidence map distinguish the mock worker from private production renderer images.
 ```
 
 ## Node: Security Hardening

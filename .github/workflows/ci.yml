@@ -65,3 +65,6 @@ jobs:
               -schema-location "https://raw.githubusercontent.com/datreeio/CRDs-catalog/${CRD_CATALOG_REF}/{{ .Group }}/{{ .ResourceKind }}_{{ .ResourceAPIVersion }}.json" \
               "${manifest}"
           done
+
+      - name: Local mock worker smoke test
+        run: scripts/smoke-local.sh
