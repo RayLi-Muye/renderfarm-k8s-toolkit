@@ -87,6 +87,8 @@ This repo uses GitHub features intentionally:
 
 See [docs/development.md](docs/development.md) and [docs/roadmap.md](docs/roadmap.md).
 
+See [VISION.md](VISION.md) for the product direction, safety boundary, and near-term maintenance priorities.
+
 ## Delivery Nodes
 
 Future work is tracked as GitHub issues and written so another contributor or agent can continue from a clean handoff. See [docs/delivery-prompts.md](docs/delivery-prompts.md) for continuation prompts.
