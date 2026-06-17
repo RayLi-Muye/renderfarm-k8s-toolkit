@@ -60,12 +60,21 @@ helm template render-worker charts/render-worker -f examples/values-aws-gpu-sqs.
 
 The default chart is safe for public review: KEDA is disabled in `values.yaml`, no secrets are populated, and no cloud resources are created by Helm.
 
+Run the public mock worker smoke test without AWS credentials, a real renderer, or a Kubernetes cluster:
+
+```bash
+make smoke-local
+```
+
+The smoke path reads [examples/mock-queue.txt](examples/mock-queue.txt), writes placeholder frame outputs, and creates a postprocess manifest. It validates the chart-facing worker contract while keeping proprietary renderer binaries, license files, customer scenes, and cloud resources out of this repository.
+
 ## Reviewer Path
 
 1. Run `make lint` and `make template`.
-2. Inspect [docs/evidence-map.md](docs/evidence-map.md) for claim-to-file references.
-3. Read [docs/architecture.md](docs/architecture.md) for scope boundaries and production integrations.
-4. Check open issues for the next hardening nodes and merged pull requests for review history.
+2. Run `make smoke-local` to exercise the public mock worker path.
+3. Inspect [docs/evidence-map.md](docs/evidence-map.md) for claim-to-file references.
+4. Read [docs/architecture.md](docs/architecture.md) for scope boundaries and production integrations.
+5. Check open issues for the next hardening nodes and merged pull requests for review history.
 
 ## Development Workflow
 
