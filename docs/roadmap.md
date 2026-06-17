@@ -1,5 +1,7 @@
 # Roadmap
 
+The roadmap is guided by the product direction and public/private safety boundary in [../VISION.md](../VISION.md).
+
 ## Milestone 1: Reusable Helm Component
 
 - Render worker Deployment.
