@@ -96,6 +96,23 @@
               }
             }
           }
+        },
+        "trigger": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "queueURLFromEnv": {
+              "type": "string",
+              "minLength": 1
+            },
+            "awsRegion": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
         }
       }
     },
@@ -104,6 +121,27 @@
       "properties": {
         "enabled": {
           "type": "boolean"
+        },
+        "nameSuffix": {
+          "type": "string",
+          "minLength": 1
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "pullPolicy": {
+              "type": "string",
+              "enum": ["Always", "IfNotPresent", "Never"]
+            }
+          }
         },
         "ttlSecondsAfterFinished": {
           "type": "integer",

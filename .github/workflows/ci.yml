@@ -68,3 +68,6 @@ jobs:
 
       - name: Local mock worker smoke test
         run: scripts/smoke-local.sh
+
+      - name: Chart contract tests
+        run: scripts/chart-contract-tests.sh

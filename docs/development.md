@@ -14,11 +14,14 @@ make lint
 make template
 make template-local
 make smoke-local
+make test
 ```
 
 `scripts/render-examples.sh` also validates rendered manifests with kubeconform when it is installed locally. CI installs Helm and kubeconform with pinned versions and SHA256 checksums, then validates built-in Kubernetes resources and KEDA CRDs through a pinned CRD schema catalog.
 
 `make smoke-local` runs the public mock worker path from `workers/mock-render-worker/mock-render-worker.sh`. It consumes `examples/mock-queue.txt`, writes placeholder frame output, and creates a postprocess manifest without AWS credentials, a real renderer, or a Kubernetes cluster.
+
+`make test` runs local chart contract tests for GPU enabled/disabled rendering, KEDA enabled/disabled rendering, and schema rejection for common invalid values.
 
 ## Branching
 
