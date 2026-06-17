@@ -50,6 +50,27 @@ Evidence update:
 - Update docs/evidence-map.md for schema validation and CI hardening.
 ```
 
+## Node: Chart Tests and Schema
+
+```text
+Repository: RayLi-Muye/renderfarm-k8s-toolkit
+Issue: #3 Add chart unit tests and stronger values schema
+
+This node has been implemented with local chart contract tests and additional values schema coverage. Continue only if the project needs a dedicated Helm test framework or deeper negative schema coverage.
+
+Implemented files:
+- scripts/chart-contract-tests.sh
+- charts/render-worker/values.schema.json
+- .github/workflows/ci.yml
+- Makefile
+- docs/development.md
+- docs/evidence-map.md
+
+Validation:
+- `make test` checks GPU enabled/disabled rendering, KEDA enabled/disabled rendering, and schema rejection for invalid replica counts, GPU counts, and image pull policies.
+- CI runs the chart contract tests on pull requests and main pushes.
+```
+
 ## Node: Mock Render Worker
 
 ```text

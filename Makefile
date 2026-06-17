@@ -1,4 +1,4 @@
-.PHONY: lint template template-local smoke-local
+.PHONY: lint template template-local smoke-local test
 
 lint:
 	helm lint charts/render-worker
@@ -11,3 +11,6 @@ template-local:
 
 smoke-local:
 	scripts/smoke-local.sh
+
+test:
+	scripts/chart-contract-tests.sh
