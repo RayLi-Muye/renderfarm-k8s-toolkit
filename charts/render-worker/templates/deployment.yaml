@@ -39,11 +39,9 @@ spec:
           args:
             {{- toYaml .Values.worker.args | nindent 12 }}
           env:
-            {{- range $name, $value := .Values.worker.env }}
-            - name: {{ $name }}
-              value: {{ $value | quote }}
-            {{- end }}
-          {{- if or .Values.configMap.create .Values.secret.create }}
+            {{- include "render-worker.workerEnv" . | nindent 12 }}
+          {{- $existingSecretName := include "render-worker.existingSecretName" . }}
+          {{- if or .Values.configMap.create .Values.secret.create $existingSecretName }}
           envFrom:
             {{- if .Values.configMap.create }}
             - configMapRef:
@@ -52,6 +50,10 @@ spec:
             {{- if .Values.secret.create }}
             - secretRef:
                 name: {{ include "render-worker.fullname" . }}-secret
+            {{- end }}
+            {{- if $existingSecretName }}
+            - secretRef:
+                name: {{ $existingSecretName }}
             {{- end }}
           {{- end }}
           resources:
@@ -64,7 +66,7 @@ spec:
               {{- end }}
           volumeMounts:
             - name: workdir
-              mountPath: {{ .Values.worker.env.RENDER_TMP_DIR | quote }}
+              mountPath: {{ include "render-worker.workdirMountPath" . | quote }}
       volumes:
         - name: workdir
           emptyDir:

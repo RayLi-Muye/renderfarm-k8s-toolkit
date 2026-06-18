@@ -14,11 +14,11 @@ spec:
   pollingInterval: {{ .Values.keda.pollingInterval }}
   cooldownPeriod: {{ .Values.keda.cooldownPeriod }}
   triggers:
-    - type: {{ .Values.keda.trigger.type }}
+    - type: {{ include "render-worker.kedaTriggerType" . }}
       metadata:
-        queueURLFromEnv: {{ .Values.keda.trigger.queueURLFromEnv | quote }}
-        queueLength: {{ .Values.keda.queueLength | quote }}
-        awsRegion: {{ .Values.keda.trigger.awsRegion | quote }}
+        queueURLFromEnv: {{ include "render-worker.kedaQueueURLFromEnv" . | quote }}
+        queueLength: {{ include "render-worker.kedaQueueLength" . | quote }}
+        awsRegion: {{ include "render-worker.kedaAWSRegion" . | quote }}
       {{- if .Values.keda.authentication.enabled }}
       authenticationRef:
         name: {{ default (printf "%s-sqs-auth" (include "render-worker.fullname" .)) .Values.keda.authentication.name }}

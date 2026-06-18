@@ -8,24 +8,31 @@ Use these prompts to continue development from a fresh checkout. Each prompt is 
 Repository: RayLi-Muye/renderfarm-k8s-toolkit
 Issue: #12 Define chart adapter seams for queue, storage, and identity
 
-Implement a deeper public values interface for queue, storage, and identity adapters without breaking the current AWS GPU/SQS example.
+This node has been implemented with public values interfaces for queue, storage, and identity adapters while preserving the AWS GPU/SQS example.
 
-Expected files:
+Implemented files:
 - charts/render-worker/values.yaml
 - charts/render-worker/values.schema.json
-- charts/render-worker/templates/*
+- charts/render-worker/templates/_helpers.tpl
+- charts/render-worker/templates/deployment.yaml
+- charts/render-worker/templates/keda-scaledobject.yaml
+- charts/render-worker/templates/serviceaccount.yaml
 - examples/*
 - docs/architecture.md
 - docs/evidence-map.md
+- scripts/chart-contract-tests.sh
 
 Validation:
 - helm lint charts/render-worker
 - helm template render-worker charts/render-worker
 - helm template render-worker charts/render-worker -f examples/values-local.yaml
+- helm template render-worker charts/render-worker -f examples/values-local-minio.yaml
 - helm template render-worker charts/render-worker -f examples/values-aws-gpu-sqs.yaml
+- make test
 
-Evidence update:
-- Update docs/evidence-map.md with adapter claims, verification commands, status, and boundaries.
+Follow-up direction:
+- Add deeper adapter-specific negative tests if the values schema becomes conditional.
+- Add a richer local object-store demo only if it remains public-safe and credential-free.
 ```
 
 ## Node: Kubeconform and Install Integrity

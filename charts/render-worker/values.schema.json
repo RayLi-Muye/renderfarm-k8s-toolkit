@@ -51,6 +51,147 @@
         }
       }
     },
+    "adapters": {
+      "type": "object",
+      "properties": {
+        "queue": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["sqs", "mock"]
+            },
+            "envName": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sqs": {
+              "type": "object",
+              "properties": {
+                "queueURL": {
+                  "type": "string"
+                },
+                "awsRegion": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "queueLength": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "mock": {
+              "type": "object",
+              "properties": {
+                "queueName": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "storage": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["s3", "local", "minio"]
+            },
+            "assetEnvName": {
+              "type": "string",
+              "minLength": 1
+            },
+            "outputEnvName": {
+              "type": "string",
+              "minLength": 1
+            },
+            "s3": {
+              "type": "object",
+              "properties": {
+                "assetBucket": {
+                  "type": "string"
+                },
+                "outputBucket": {
+                  "type": "string"
+                },
+                "awsRegion": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "local": {
+              "type": "object",
+              "properties": {
+                "assetPath": {
+                  "type": "string"
+                },
+                "outputPath": {
+                  "type": "string"
+                }
+              }
+            },
+            "minio": {
+              "type": "object",
+              "properties": {
+                "endpoint": {
+                  "type": "string"
+                },
+                "assetBucket": {
+                  "type": "string"
+                },
+                "outputBucket": {
+                  "type": "string"
+                },
+                "region": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        },
+        "identity": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["none", "irsa", "podIdentity", "existingSecret"]
+            },
+            "irsa": {
+              "type": "object",
+              "properties": {
+                "annotationKey": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "roleArn": {
+                  "type": "string"
+                }
+              }
+            },
+            "podIdentity": {
+              "type": "object",
+              "properties": {
+                "provider": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "existingSecret": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "keda": {
       "type": "object",
       "properties": {
