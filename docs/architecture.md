@@ -20,11 +20,36 @@ It owns reusable Kubernetes primitives:
 - ConfigMap and Secret injection points.
 - Post-processing `Job` template.
 
+## Adapter Seams
+
+The chart exposes provider seams through `adapters.queue`, `adapters.storage`, and `adapters.identity`.
+
+Queue adapters define how workers discover work:
+
+- `mock` renders a local queue placeholder into the worker environment for public smoke paths.
+- `sqs` renders an SQS queue URL into the worker environment and drives KEDA SQS trigger metadata.
+
+Storage adapters define how workers discover assets and outputs:
+
+- `local` renders local placeholder paths for mock and reviewer workflows.
+- `minio` renders bucket names plus an endpoint for local object-storage-style examples.
+- `s3` renders bucket names and region placeholders for AWS/EKS-style deployments.
+
+Identity adapters define how the workload receives credentials or permissions without committing secrets:
+
+- `none` renders no identity integration.
+- `irsa` renders a ServiceAccount role annotation from a placeholder role ARN.
+- `podIdentity` renders the KEDA `TriggerAuthentication` provider while cluster identity binding stays outside this chart.
+- `existingSecret` references an externally managed Kubernetes Secret through `envFrom`.
+
+The adapter values are chart contracts only. They do not create SQS queues, buckets, IAM roles, Secrets, MinIO instances, or cloud resources.
+
 ## Design Constraints and Tradeoffs
 
 - The chart treats renderer images as private adapters. Public examples use placeholders because renderer binaries, license files, and customer scenes must stay outside this repository.
 - KEDA owns runtime worker replica count when autoscaling is enabled. The chart omits `Deployment.spec.replicas` in that mode so Helm upgrades do not reset an active worker pool.
 - KEDA scaler authentication is modeled separately from worker AWS access. The worker ServiceAccount handles job execution permissions; `TriggerAuthentication` handles scaler access to queue metrics.
+- `worker.env` remains a compatibility overlay and can override adapter-generated environment variables when a private deployment needs a custom contract.
 - S3/SQS/EKS names in examples are placeholders. Production infrastructure, IAM policies, and cloud resources are expected to live in private environment repositories.
 - Post-processing is currently represented as a chart-rendered `Job`; its production upgrade semantics are tracked separately because Kubernetes Job pod templates are immutable after creation.
 

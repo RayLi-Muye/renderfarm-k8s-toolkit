@@ -8,22 +8,32 @@ image:
   repository: 000000000000.dkr.ecr.us-east-1.amazonaws.com/render-worker
   tag: "0.1.0"
 
-serviceAccount:
-  annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::000000000000:role/render-worker-irsa
-
 worker:
   command:
     - /app/render-worker
   args:
     - --mode=sqs
   env:
-    AWS_REGION: us-east-1
-    ASSET_BUCKET: render-assets-example
-    OUTPUT_BUCKET: render-output-example
-    QUEUE_URL: https://sqs.us-east-1.amazonaws.com/000000000000/render-frames
     RENDER_TMP_DIR: /work
     LOG_LEVEL: info
+
+adapters:
+  queue:
+    type: sqs
+    sqs:
+      queueURL: https://sqs.us-east-1.amazonaws.com/000000000000/render-frames
+      awsRegion: us-east-1
+      queueLength: "1"
+  storage:
+    type: s3
+    s3:
+      assetBucket: render-assets-example
+      outputBucket: render-output-example
+      awsRegion: us-east-1
+  identity:
+    type: irsa
+    irsa:
+      roleArn: arn:aws:iam::000000000000:role/render-worker-irsa
 
 resources:
   requests:
@@ -53,15 +63,10 @@ keda:
   maxReplicaCount: 20
   pollingInterval: 10
   cooldownPeriod: 300
-  queueLength: "1"
   authentication:
     enabled: true
     podIdentity:
       provider: aws
-  trigger:
-    type: aws-sqs-queue
-    queueURLFromEnv: QUEUE_URL
-    awsRegion: us-east-1
 
 configMap:
   data:

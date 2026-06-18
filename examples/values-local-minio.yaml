@@ -13,9 +13,8 @@ worker:
     - /bin/sh
     - -c
   args:
-    - while true; do echo "local placeholder render worker"; sleep 30; done
+    - while true; do echo "local minio placeholder render worker"; sleep 30; done
   env:
-    AWS_REGION: local
     RENDER_TMP_DIR: /work
     LOG_LEVEL: debug
 
@@ -25,12 +24,16 @@ adapters:
     mock:
       queueName: local-queue
   storage:
-    type: local
-    local:
-      assetPath: local-assets
-      outputPath: local-output
+    type: minio
+    minio:
+      endpoint: http://minio.minio.svc.cluster.local:9000
+      assetBucket: render-assets
+      outputBucket: render-output
+      region: us-east-1
   identity:
-    type: none
+    type: existingSecret
+    existingSecret:
+      name: render-worker-credentials
 
 resources:
   requests:
@@ -45,11 +48,3 @@ gpu:
 
 keda:
   enabled: false
-
-postprocessJob:
-  enabled: true
-  image:
-    repository: busybox
-    tag: "1.36"
-  args:
-    - echo "local postprocess placeholder"

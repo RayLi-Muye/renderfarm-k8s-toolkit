@@ -30,11 +30,44 @@ worker:
     - echo "render worker image not configured"; sleep 3600
   env:
     AWS_REGION: us-east-1
-    ASSET_BUCKET: ""
-    OUTPUT_BUCKET: ""
-    QUEUE_URL: ""
     RENDER_TMP_DIR: /work
     LOG_LEVEL: info
+
+adapters:
+  queue:
+    type: mock
+    envName: QUEUE_URL
+    sqs:
+      queueURL: ""
+      awsRegion: us-east-1
+      queueLength: "1"
+    mock:
+      queueName: ""
+  storage:
+    type: local
+    assetEnvName: ASSET_BUCKET
+    outputEnvName: OUTPUT_BUCKET
+    s3:
+      assetBucket: ""
+      outputBucket: ""
+      awsRegion: us-east-1
+    local:
+      assetPath: ""
+      outputPath: ""
+    minio:
+      endpoint: ""
+      assetBucket: ""
+      outputBucket: ""
+      region: us-east-1
+  identity:
+    type: none
+    irsa:
+      annotationKey: eks.amazonaws.com/role-arn
+      roleArn: ""
+    podIdentity:
+      provider: aws
+    existingSecret:
+      name: ""
 
 resources:
   requests:

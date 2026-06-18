@@ -1,4 +1,4 @@
-.PHONY: lint template template-local smoke-local test
+.PHONY: lint template template-local template-minio smoke-local test
 
 lint:
 	helm lint charts/render-worker
@@ -8,6 +8,9 @@ template:
 
 template-local:
 	helm template render-worker charts/render-worker -f examples/values-local.yaml
+
+template-minio:
+	helm template render-worker charts/render-worker -f examples/values-local-minio.yaml
 
 smoke-local:
 	scripts/smoke-local.sh

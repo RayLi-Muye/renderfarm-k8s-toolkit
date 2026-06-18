@@ -8,5 +8,5 @@ metadata:
     {{- include "render-worker.labels" . | nindent 4 }}
 spec:
   podIdentity:
-    provider: {{ .Values.keda.authentication.podIdentity.provider | quote }}
+    provider: {{ include "render-worker.kedaPodIdentityProvider" . | quote }}
 {{- end }}

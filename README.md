@@ -20,6 +20,7 @@ The first reusable component is a Helm chart for render worker orchestration:
 - Kubernetes `Job` template for post-render processing.
 - `ServiceAccount` annotations for IRSA or EKS Pod Identity style integrations.
 - ConfigMap and Secret injection points.
+- Queue, storage, and identity adapter seams for public-safe local and AWS-style examples.
 - Node scheduling controls for GPU, CPU, Spot, and post-processing pools.
 - Example values files for local and AWS/EKS-style deployments.
 

@@ -52,12 +52,15 @@ jobs:
       - name: Render local example
         run: helm template render-worker charts/render-worker -f examples/values-local.yaml > /tmp/rendered/local.yaml
 
+      - name: Render local MinIO example
+        run: helm template render-worker charts/render-worker -f examples/values-local-minio.yaml > /tmp/rendered/local-minio.yaml
+
       - name: Render AWS GPU SQS example
         run: helm template render-worker charts/render-worker -f examples/values-aws-gpu-sqs.yaml > /tmp/rendered/aws-gpu-sqs.yaml
 
       - name: Validate rendered Kubernetes manifests
         run: |
-          for manifest in /tmp/rendered/default.yaml /tmp/rendered/local.yaml /tmp/rendered/aws-gpu-sqs.yaml; do
+          for manifest in /tmp/rendered/default.yaml /tmp/rendered/local.yaml /tmp/rendered/local-minio.yaml /tmp/rendered/aws-gpu-sqs.yaml; do
             echo "Validating ${manifest}"
             kubeconform -strict -summary \
               -kubernetes-version "${KUBE_VERSION}" \

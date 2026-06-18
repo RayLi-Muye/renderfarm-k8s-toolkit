@@ -13,6 +13,7 @@ Commands:
 make lint
 make template
 make template-local
+make template-minio
 make smoke-local
 make test
 ```
