@@ -13,6 +13,7 @@ This repository packages the public-safe Kubernetes layer around a render farm: 
 [Local Development](#local-development) |
 [Architecture](#architecture) |
 [Scheduling](#scheduling) |
+[Security](#security) |
 [Repository Map](#repository-map) |
 [Roadmap](#roadmap) |
 [Contributing](#contributing) |
@@ -134,6 +135,16 @@ belongs to the application or platform chart that renders API pods.
 Read `docs/scheduling.md` for Karpenter/EKS Auto Mode integration notes and the
 GPU/CPU scheduling profiles used by `examples/values-aws-gpu-sqs.yaml`.
 
+## Security
+
+Use workload identity and externally managed secrets for private deployments.
+The public examples use placeholder account ids and never include AWS keys,
+renderer licenses, customer scenes, or production values.
+
+Read `docs/security.md` for IRSA/EKS Pod Identity guidance, secret handling
+boundaries, and the opt-in NetworkPolicy profile in
+`examples/values-security-hardening.yaml`.
+
 ## Repository Map
 
 ```text
@@ -141,7 +152,7 @@ charts/render-worker/        Helm chart, templates, values, and schema
 examples/                    Public-safe local and AWS-style values files
 workers/mock-render-worker/  Local mock worker used by smoke tests
 scripts/                     Contract, render, and smoke validation scripts
-docs/                        Architecture, scheduling, development, roadmap, and evidence map
+docs/                        Architecture, scheduling, security, development, roadmap, and evidence map
 .github/                     CI workflow and issue/PR templates
 VISION.md                    Product direction and safety boundary
 ```

@@ -18,6 +18,7 @@ It owns reusable Kubernetes primitives:
 - Node scheduling controls for GPU workers and CPU postprocess jobs.
 - ServiceAccount configuration for AWS permissions.
 - ConfigMap and Secret injection points.
+- Opt-in NetworkPolicy for worker network boundaries.
 - Post-processing `Job` template.
 
 ## Adapter Seams
@@ -50,6 +51,7 @@ The adapter values are chart contracts only. They do not create SQS queues, buck
 - KEDA owns runtime worker replica count when autoscaling is enabled. The chart omits `Deployment.spec.replicas` in that mode so Helm upgrades do not reset an active worker pool.
 - KEDA scaler authentication is modeled separately from worker AWS access. The worker ServiceAccount handles job execution permissions; `TriggerAuthentication` handles scaler access to queue metrics.
 - GPU render workers, CPU postprocess jobs, and API-facing pods should use separate node pools. API pods are outside this chart and should be scheduled by the application or platform chart that owns them.
+- AWS permissions should use workload identity, not committed keys. Renderer licenses and customer credentials should be supplied by private secret management systems, not public values files.
 - `worker.env` remains a compatibility overlay and can override adapter-generated environment variables when a private deployment needs a custom contract.
 - S3/SQS/EKS names in examples are placeholders. Production infrastructure, IAM policies, and cloud resources are expected to live in private environment repositories.
 - Post-processing is currently represented as a chart-rendered `Job`; its production upgrade semantics are tracked separately because Kubernetes Job pod templates are immutable after creation.

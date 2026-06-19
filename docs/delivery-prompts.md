@@ -107,18 +107,34 @@ Validation:
 Repository: RayLi-Muye/renderfarm-k8s-toolkit
 Issue: #5 Add security hardening examples for AWS permissions and secrets
 
-Add public-safe security examples for AWS permissions, secrets, and network isolation.
+This node has been implemented with public-safe security examples for AWS
+permissions, secrets, and network isolation.
 
-Expected files:
-- examples/*
-- charts/render-worker/templates/*
+Implemented files:
+- examples/values-security-hardening.yaml
+- charts/render-worker/values.yaml
+- charts/render-worker/values.schema.json
+- charts/render-worker/templates/networkpolicy.yaml
+- docs/security.md
+- README.md
 - docs/architecture.md
 - docs/evidence-map.md
+- docs/development.md
+- scripts/chart-contract-tests.sh
+- scripts/render-examples.sh
+- .github/workflows/ci.yml
+- Makefile
 
 Validation:
-- Helm lint and template rendering pass.
-- Security examples use placeholders only.
-- Docs explain where production IAM, Secrets Manager, External Secrets, and NetworkPolicy decisions live.
+- `make template-security` renders the security hardening profile.
+- `make test` checks placeholder IRSA, NetworkPolicy selection, egress gateway
+  placeholder, and absence of static AWS key env or generated Secrets.
+- `scripts/render-examples.sh` validates the security example with kubeconform
+  when available.
+
+Follow-up direction:
+- Add pod/container securityContext fields only if a concrete private runtime
+  contract needs them and they can remain backward-compatible.
 ```
 
 ## Node: GPU Scheduling And Karpenter Examples

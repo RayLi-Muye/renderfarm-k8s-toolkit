@@ -1,0 +1,92 @@
+namespace:
+  create: true
+  name: render-workers
+
+replicaCount: 0
+
+image:
+  repository: 000000000000.dkr.ecr.us-east-1.amazonaws.com/render-worker
+  tag: "0.1.0"
+
+worker:
+  command:
+    - /app/render-worker
+  args:
+    - --mode=sqs
+  env:
+    RENDER_TMP_DIR: /work
+    LOG_LEVEL: info
+
+adapters:
+  queue:
+    type: sqs
+    sqs:
+      queueURL: https://sqs.us-east-1.amazonaws.com/000000000000/render-frames
+      awsRegion: us-east-1
+      queueLength: "1"
+  storage:
+    type: s3
+    s3:
+      assetBucket: render-assets-example
+      outputBucket: render-output-example
+      awsRegion: us-east-1
+  identity:
+    type: irsa
+    irsa:
+      annotationKey: eks.amazonaws.com/role-arn
+      roleArn: arn:aws:iam::000000000000:role/render-worker-irsa
+
+# Public examples should not create Kubernetes Secrets with AWS keys, renderer
+# licenses, customer files, or production values. Use IRSA/EKS Pod Identity for
+# AWS permissions and use an external secret controller in private deployments
+# when a renderer-specific license or token is unavoidable.
+secret:
+  create: false
+
+keda:
+  enabled: true
+  minReplicaCount: 0
+  maxReplicaCount: 10
+  pollingInterval: 10
+  cooldownPeriod: 300
+  authentication:
+    enabled: true
+    podIdentity:
+      provider: aws
+
+networkPolicy:
+  enabled: true
+  name: render-worker-egress-boundary
+  policyTypes:
+    - Ingress
+    - Egress
+  # Queue-consuming render workers do not need inbound traffic from unrelated
+  # workloads. API pods and submitters should live behind their own chart and
+  # NetworkPolicy.
+  ingress: []
+  egress:
+    # DNS is required before workers can reach private endpoints or egress
+    # gateways. Adapt labels for the cluster DNS implementation in private
+    # infrastructure.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Direct AWS public endpoints are better handled through VPC endpoints,
+    # security groups, or an egress gateway. This placeholder keeps worker
+    # egress scoped to a named private gateway instead of every pod.
+    - to:
+        - podSelector:
+            matchLabels:
+              renderfarm.dev/network-role: aws-egress-gateway
+      ports:
+        - protocol: TCP
+          port: 443

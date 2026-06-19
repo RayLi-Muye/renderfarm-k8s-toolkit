@@ -53,11 +53,13 @@ default_manifest="${TMP_DIR}/default.yaml"
 local_manifest="${TMP_DIR}/local.yaml"
 aws_manifest="${TMP_DIR}/aws-gpu-sqs.yaml"
 minio_manifest="${TMP_DIR}/local-minio.yaml"
+security_manifest="${TMP_DIR}/security-hardening.yaml"
 
 render_chart "${default_manifest}"
 assert_contains "${default_manifest}" "kind: Deployment" "default chart renders a worker Deployment"
 assert_contains "${default_manifest}" "replicas: 0" "default chart keeps workers scaled to zero without KEDA"
 assert_not_contains "${default_manifest}" "kind: ScaledObject" "default chart does not render KEDA"
+assert_not_contains "${default_manifest}" "kind: NetworkPolicy" "default chart does not render NetworkPolicy"
 assert_not_contains "${default_manifest}" "nvidia.com/gpu" "default chart does not request GPU resources"
 
 render_chart "${local_manifest}" -f "${ROOT_DIR}/examples/values-local.yaml"
@@ -87,6 +89,16 @@ assert_contains "${aws_manifest}" "value: cpu-postprocess" "AWS example tolerate
 assert_contains "${aws_manifest}" "karpenter.sh/nodepool: render-cpu" "AWS example schedules postprocess jobs onto the CPU node pool"
 assert_contains "${aws_manifest}" "karpenter.sh/capacity-type" "AWS example includes a postprocess capacity-type affinity hint"
 assert_not_contains "${aws_manifest}" "replicas:" "AWS KEDA example leaves replica count to autoscaling"
+
+render_chart "${security_manifest}" -f "${ROOT_DIR}/examples/values-security-hardening.yaml"
+assert_contains "${security_manifest}" "kind: NetworkPolicy" "security example renders a NetworkPolicy"
+assert_contains "${security_manifest}" "name: render-worker-egress-boundary" "security example uses an explicit NetworkPolicy name"
+assert_contains "${security_manifest}" "eks.amazonaws.com/role-arn: arn:aws:iam::000000000000:role/render-worker-irsa" "security example keeps IRSA role ARN as a placeholder"
+assert_contains "${security_manifest}" "workload.renderfarm.dev/type: worker" "security NetworkPolicy selects worker pods"
+assert_contains "${security_manifest}" "renderfarm.dev/network-role: aws-egress-gateway" "security example scopes egress through a placeholder gateway"
+assert_not_contains "${security_manifest}" "AWS_ACCESS_KEY_ID" "security example does not inject static AWS access keys"
+assert_not_contains "${security_manifest}" "AWS_SECRET_ACCESS_KEY" "security example does not inject static AWS secret keys"
+assert_not_contains "${security_manifest}" "kind: Secret" "security example does not create a Kubernetes Secret"
 
 cat >"${TMP_DIR}/pod-identity-adapter.yaml" <<'YAML'
 keda:
@@ -149,6 +161,14 @@ adapters:
     type: staticCredentials
 YAML
 expect_lint_failure "invalid-identity-adapter" "${TMP_DIR}/invalid-identity-adapter.yaml"
+
+cat >"${TMP_DIR}/invalid-network-policy-type.yaml" <<'YAML'
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - External
+YAML
+expect_lint_failure "invalid-network-policy-type" "${TMP_DIR}/invalid-network-policy-type.yaml"
 
 cat >"${TMP_DIR}/worker-env-override.yaml" <<'YAML'
 adapters:
