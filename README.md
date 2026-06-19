@@ -12,6 +12,7 @@ This repository packages the public-safe Kubernetes layer around a render farm: 
 [Quick Start](#quick-start) |
 [Local Development](#local-development) |
 [Architecture](#architecture) |
+[Scheduling](#scheduling) |
 [Repository Map](#repository-map) |
 [Roadmap](#roadmap) |
 [Contributing](#contributing) |
@@ -124,6 +125,15 @@ The chart renders Kubernetes resources only. It does not create SQS queues, S3 b
 
 For more detail, read `docs/architecture.md`.
 
+## Scheduling
+
+GPU workers, CPU postprocess Jobs, and API-facing pods should use different node
+pools. The chart owns worker and postprocess scheduling fields; API scheduling
+belongs to the application or platform chart that renders API pods.
+
+Read `docs/scheduling.md` for Karpenter/EKS Auto Mode integration notes and the
+GPU/CPU scheduling profiles used by `examples/values-aws-gpu-sqs.yaml`.
+
 ## Repository Map
 
 ```text
@@ -131,7 +141,7 @@ charts/render-worker/        Helm chart, templates, values, and schema
 examples/                    Public-safe local and AWS-style values files
 workers/mock-render-worker/  Local mock worker used by smoke tests
 scripts/                     Contract, render, and smoke validation scripts
-docs/                        Architecture, development, roadmap, and evidence map
+docs/                        Architecture, scheduling, development, roadmap, and evidence map
 .github/                     CI workflow and issue/PR templates
 VISION.md                    Product direction and safety boundary
 ```

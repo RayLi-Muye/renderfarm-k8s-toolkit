@@ -51,6 +51,21 @@
         }
       }
     },
+    "nodeSelector": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "tolerations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "affinity": {
+      "type": "object"
+    },
     "adapters": {
       "type": "object",
       "properties": {
@@ -291,6 +306,21 @@
         "backoffLimit": {
           "type": "integer",
           "minimum": 0
+        },
+        "nodeSelector": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tolerations": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "affinity": {
+          "type": "object"
         }
       }
     }

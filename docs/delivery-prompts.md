@@ -120,3 +120,34 @@ Validation:
 - Security examples use placeholders only.
 - Docs explain where production IAM, Secrets Manager, External Secrets, and NetworkPolicy decisions live.
 ```
+
+## Node: GPU Scheduling And Karpenter Examples
+
+```text
+Repository: RayLi-Muye/renderfarm-k8s-toolkit
+Issue: #2 Add GPU node scheduling and Karpenter examples
+
+This node has been implemented with GPU worker scheduling examples, CPU
+postprocess scheduling support, and Karpenter/EKS Auto Mode documentation.
+
+Implemented files:
+- charts/render-worker/values.yaml
+- charts/render-worker/values.schema.json
+- charts/render-worker/templates/postprocess-job.yaml
+- examples/values-aws-gpu-sqs.yaml
+- docs/scheduling.md
+- README.md
+- docs/architecture.md
+- docs/evidence-map.md
+- scripts/chart-contract-tests.sh
+
+Validation:
+- `make test` checks GPU worker scheduling and CPU postprocess scheduling
+  fields in the AWS example.
+- `scripts/render-examples.sh` renders and validates the AWS example with
+  kubeconform when available.
+
+Follow-up direction:
+- Add cluster-specific private Karpenter NodePool or EKS Auto Mode resources in
+  a private infrastructure repository, not in this public chart.
+```
