@@ -58,9 +58,12 @@ jobs:
       - name: Render AWS GPU SQS example
         run: helm template render-worker charts/render-worker -f examples/values-aws-gpu-sqs.yaml > /tmp/rendered/aws-gpu-sqs.yaml
 
+      - name: Render security hardening example
+        run: helm template render-worker charts/render-worker -f examples/values-security-hardening.yaml > /tmp/rendered/security-hardening.yaml
+
       - name: Validate rendered Kubernetes manifests
         run: |
-          for manifest in /tmp/rendered/default.yaml /tmp/rendered/local.yaml /tmp/rendered/local-minio.yaml /tmp/rendered/aws-gpu-sqs.yaml; do
+          for manifest in /tmp/rendered/default.yaml /tmp/rendered/local.yaml /tmp/rendered/local-minio.yaml /tmp/rendered/aws-gpu-sqs.yaml /tmp/rendered/security-hardening.yaml; do
             echo "Validating ${manifest}"
             kubeconform -strict -summary \
               -kubernetes-version "${KUBE_VERSION}" \

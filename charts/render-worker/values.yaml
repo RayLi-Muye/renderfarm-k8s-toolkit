@@ -97,6 +97,15 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
+networkPolicy:
+  enabled: false
+  name: ""
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress: []
+  egress: []
+
 keda:
   enabled: false
   minReplicaCount: 0
