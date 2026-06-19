@@ -126,6 +126,20 @@ The chart renders Kubernetes resources only. It does not create SQS queues, S3 b
 
 For more detail, read `docs/architecture.md`.
 
+## Postprocess Job Ownership
+
+`postprocessJob.mode` defaults to `hook`. In hook mode the chart renders the
+postprocess `Job` as a Helm `post-install,post-upgrade` hook with
+`before-hook-creation,hook-succeeded` deletion. That keeps image, command, args,
+env, and pod-template changes out of Helm's normal release object patch path,
+where Kubernetes would reject immutable `Job.spec.template` updates.
+
+Use `postprocessJob.mode: managed` only when a private environment intentionally
+wants the postprocess `Job` owned as a normal Helm release resource. Managed mode
+keeps the stable Job object visible after install/upgrade, but pod-template
+changes require the environment owner to delete/recreate the Job or use a new
+name suffix before upgrading.
+
 ## Scheduling
 
 GPU workers, CPU postprocess Jobs, and API-facing pods should use different node
@@ -164,7 +178,7 @@ Near-term work is intentionally small and GitHub-native:
 1. Keep the chart contract covered by local tests and schema validation.
 2. Harden public-safe security examples for AWS permissions, secrets, and network boundaries.
 3. Expand GPU scheduling examples for worker, CPU, Spot, and post-processing pools.
-4. Rework postprocess job upgrade semantics before presenting it as production-ready.
+4. Add optional live-cluster upgrade proof in a private, disposable Kubernetes environment.
 
 See `VISION.md`, `docs/roadmap.md`, and the open GitHub issues for the current queue.
 

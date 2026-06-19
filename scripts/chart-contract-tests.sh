@@ -64,6 +64,8 @@ assert_not_contains "${default_manifest}" "nvidia.com/gpu" "default chart does n
 
 render_chart "${local_manifest}" -f "${ROOT_DIR}/examples/values-local.yaml"
 assert_contains "${local_manifest}" "replicas: 1" "local example renders one worker replica"
+assert_contains "${local_manifest}" "\"helm.sh/hook\": \"post-install,post-upgrade\"" "local postprocess Job uses Helm hook ownership"
+assert_contains "${local_manifest}" "\"helm.sh/hook-delete-policy\": \"before-hook-creation,hook-succeeded\"" "local postprocess hook deletes old Jobs before upgrades"
 assert_contains "${local_manifest}" "value: \"local-queue\"" "local queue adapter renders worker queue env"
 assert_contains "${local_manifest}" "value: \"local-assets\"" "local storage adapter renders asset env"
 assert_contains "${local_manifest}" "value: \"local-output\"" "local storage adapter renders output env"
@@ -79,6 +81,8 @@ assert_contains "${minio_manifest}" "value: \"render-output\"" "MinIO storage ad
 render_chart "${aws_manifest}" -f "${ROOT_DIR}/examples/values-aws-gpu-sqs.yaml"
 assert_contains "${aws_manifest}" "kind: ScaledObject" "AWS example renders KEDA ScaledObject"
 assert_contains "${aws_manifest}" "kind: TriggerAuthentication" "AWS example renders KEDA TriggerAuthentication"
+assert_contains "${aws_manifest}" "\"helm.sh/hook\": \"post-install,post-upgrade\"" "AWS postprocess Job uses Helm hook ownership"
+assert_contains "${aws_manifest}" "\"helm.sh/hook-weight\": \"0\"" "AWS postprocess hook renders a deterministic hook weight"
 assert_contains "${aws_manifest}" "nvidia.com/gpu: \"1\"" "AWS example requests one GPU"
 assert_contains "${aws_manifest}" "eks.amazonaws.com/role-arn: arn:aws:iam::000000000000:role/render-worker-irsa" "IRSA identity adapter renders ServiceAccount annotation"
 assert_contains "${aws_manifest}" "value: \"https://sqs.us-east-1.amazonaws.com/000000000000/render-frames\"" "SQS queue adapter renders worker queue env"
@@ -99,6 +103,16 @@ assert_contains "${security_manifest}" "renderfarm.dev/network-role: aws-egress-
 assert_not_contains "${security_manifest}" "AWS_ACCESS_KEY_ID" "security example does not inject static AWS access keys"
 assert_not_contains "${security_manifest}" "AWS_SECRET_ACCESS_KEY" "security example does not inject static AWS secret keys"
 assert_not_contains "${security_manifest}" "kind: Secret" "security example does not create a Kubernetes Secret"
+
+cat >"${TMP_DIR}/managed-postprocess.yaml" <<'YAML'
+postprocessJob:
+  enabled: true
+  mode: managed
+YAML
+managed_postprocess_manifest="${TMP_DIR}/managed-postprocess-rendered.yaml"
+render_chart "${managed_postprocess_manifest}" -f "${TMP_DIR}/managed-postprocess.yaml"
+assert_contains "${managed_postprocess_manifest}" "kind: Job" "managed mode still renders a Job"
+assert_not_contains "${managed_postprocess_manifest}" "helm.sh/hook" "managed postprocess Job is Helm release-owned, not a hook"
 
 cat >"${TMP_DIR}/pod-identity-adapter.yaml" <<'YAML'
 keda:
@@ -140,6 +154,31 @@ postprocessJob:
     pullPolicy: Sometimes
 YAML
 expect_lint_failure "invalid-postprocess-pull-policy" "${TMP_DIR}/invalid-postprocess-pull-policy.yaml"
+
+cat >"${TMP_DIR}/invalid-postprocess-mode.yaml" <<'YAML'
+postprocessJob:
+  enabled: true
+  mode: generatedName
+YAML
+expect_lint_failure "invalid-postprocess-mode" "${TMP_DIR}/invalid-postprocess-mode.yaml"
+
+cat >"${TMP_DIR}/invalid-postprocess-hook-event.yaml" <<'YAML'
+postprocessJob:
+  enabled: true
+  hook:
+    events:
+      - during-upgrade
+YAML
+expect_lint_failure "invalid-postprocess-hook-event" "${TMP_DIR}/invalid-postprocess-hook-event.yaml"
+
+cat >"${TMP_DIR}/invalid-postprocess-hook-delete-policy.yaml" <<'YAML'
+postprocessJob:
+  enabled: true
+  hook:
+    deletePolicy:
+      - keep-forever
+YAML
+expect_lint_failure "invalid-postprocess-hook-delete-policy" "${TMP_DIR}/invalid-postprocess-hook-delete-policy.yaml"
 
 cat >"${TMP_DIR}/invalid-queue-adapter.yaml" <<'YAML'
 adapters:

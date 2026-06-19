@@ -167,3 +167,38 @@ Follow-up direction:
 - Add cluster-specific private Karpenter NodePool or EKS Auto Mode resources in
   a private infrastructure repository, not in this public chart.
 ```
+
+## Node: Postprocess Job Upgrade Semantics
+
+```text
+Repository: RayLi-Muye/renderfarm-k8s-toolkit
+Issue: #16 Rework postprocess Job upgrade semantics
+
+This node has been implemented with Helm hook ownership as the default
+postprocess Job mode. The chart now renders postprocess Jobs as
+post-install/post-upgrade hooks with before-hook-creation and hook-succeeded
+deletion so image, args, env, and pod-template changes avoid normal Helm patch
+attempts against immutable Kubernetes Job pod templates.
+
+Implemented files:
+- charts/render-worker/values.yaml
+- charts/render-worker/values.schema.json
+- charts/render-worker/templates/postprocess-job.yaml
+- scripts/chart-contract-tests.sh
+- README.md
+- VISION.md
+- docs/architecture.md
+- docs/evidence-map.md
+- docs/roadmap.md
+
+Validation:
+- `make test` checks hook annotations, delete policy, managed-mode opt-out, and
+  invalid mode/hook schema failures.
+- `scripts/render-examples.sh` renders and validates default, local, local
+  MinIO, AWS GPU/SQS, and security examples with kubeconform when available.
+
+Follow-up direction:
+- Add live-cluster upgrade evidence only in a private disposable Kubernetes
+  environment. Do not put production cluster values, credentials, or cloud
+  resources in this public chart.
+```

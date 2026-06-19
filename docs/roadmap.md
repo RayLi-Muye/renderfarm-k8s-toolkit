@@ -10,6 +10,7 @@ The roadmap is guided by the product direction and public/private safety boundar
 - ConfigMap and Secret injection.
 - ServiceAccount annotations for AWS permissions.
 - Post-processing Job template.
+- Post-processing Job hook ownership for upgrade-safe pod-template changes.
 - CI for Helm lint and template rendering.
 
 ## Milestone 2: Operational Hardening

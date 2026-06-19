@@ -54,7 +54,7 @@ The adapter values are chart contracts only. They do not create SQS queues, buck
 - AWS permissions should use workload identity, not committed keys. Renderer licenses and customer credentials should be supplied by private secret management systems, not public values files.
 - `worker.env` remains a compatibility overlay and can override adapter-generated environment variables when a private deployment needs a custom contract.
 - S3/SQS/EKS names in examples are placeholders. Production infrastructure, IAM policies, and cloud resources are expected to live in private environment repositories.
-- Post-processing is currently represented as a chart-rendered `Job`; its production upgrade semantics are tracked separately because Kubernetes Job pod templates are immutable after creation.
+- Post-processing defaults to Helm hook ownership. Hook mode runs the `Job` on install/upgrade and deletes old hook Jobs before recreating them, avoiding normal Helm patch attempts against immutable Kubernetes `Job.spec.template` fields. `postprocessJob.mode: managed` remains available for private environments that explicitly want a stable release-owned Job and accept delete/recreate responsibility on pod-template changes.
 
 ## Workload Flow
 
