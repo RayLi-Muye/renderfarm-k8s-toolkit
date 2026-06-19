@@ -7,6 +7,12 @@ metadata:
   labels:
     {{- include "render-worker.labels" . | nindent 4 }}
     workload.renderfarm.dev/type: postprocess
+  {{- if eq .Values.postprocessJob.mode "hook" }}
+  annotations:
+    "helm.sh/hook": {{ join "," .Values.postprocessJob.hook.events | quote }}
+    "helm.sh/hook-delete-policy": {{ join "," .Values.postprocessJob.hook.deletePolicy | quote }}
+    "helm.sh/hook-weight": {{ .Values.postprocessJob.hook.weight | quote }}
+  {{- end }}
 spec:
   backoffLimit: {{ .Values.postprocessJob.backoffLimit }}
   ttlSecondsAfterFinished: {{ .Values.postprocessJob.ttlSecondsAfterFinished }}

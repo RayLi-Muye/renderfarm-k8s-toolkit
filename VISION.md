@@ -59,7 +59,7 @@ Private or production content is out of scope:
 3. Keep the local smoke path useful as the chart contract grows.
 4. Add public-safe security examples for AWS permissions, secrets, and network boundaries.
 5. Expand GPU scheduling examples for GPU workers, CPU workers, and post-processing jobs.
-6. Rework postprocess job upgrade semantics before presenting it as production-ready.
+6. Add optional live-cluster upgrade evidence in private disposable environments when production adoption needs it.
 
 ## Non-Goals
 

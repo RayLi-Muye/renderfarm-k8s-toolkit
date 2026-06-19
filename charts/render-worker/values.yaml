@@ -125,7 +125,16 @@ keda:
 
 postprocessJob:
   enabled: false
+  mode: hook
   nameSuffix: postprocess
+  hook:
+    events:
+      - post-install
+      - post-upgrade
+    deletePolicy:
+      - before-hook-creation
+      - hook-succeeded
+    weight: 0
   image:
     repository: ghcr.io/rayli-muye/render-postprocess
     tag: "0.1.0"

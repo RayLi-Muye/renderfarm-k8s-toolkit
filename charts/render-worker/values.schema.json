@@ -309,9 +309,49 @@
         "enabled": {
           "type": "boolean"
         },
+        "mode": {
+          "type": "string",
+          "enum": ["hook", "managed"]
+        },
         "nameSuffix": {
           "type": "string",
           "minLength": 1
+        },
+        "hook": {
+          "type": "object",
+          "properties": {
+            "events": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "pre-install",
+                  "post-install",
+                  "pre-delete",
+                  "post-delete",
+                  "pre-upgrade",
+                  "post-upgrade",
+                  "pre-rollback",
+                  "post-rollback",
+                  "test"
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "deletePolicy": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["before-hook-creation", "hook-succeeded", "hook-failed"]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "weight": {
+              "type": "integer"
+            }
+          }
         },
         "image": {
           "type": "object",
