@@ -137,5 +137,8 @@ postprocessJob:
     limits:
       cpu: "2"
       memory: 4Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
   ttlSecondsAfterFinished: 7200
   backoffLimit: 1

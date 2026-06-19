@@ -81,6 +81,11 @@ assert_contains "${aws_manifest}" "nvidia.com/gpu: \"1\"" "AWS example requests 
 assert_contains "${aws_manifest}" "eks.amazonaws.com/role-arn: arn:aws:iam::000000000000:role/render-worker-irsa" "IRSA identity adapter renders ServiceAccount annotation"
 assert_contains "${aws_manifest}" "value: \"https://sqs.us-east-1.amazonaws.com/000000000000/render-frames\"" "SQS queue adapter renders worker queue env"
 assert_contains "${aws_manifest}" "queueURLFromEnv: \"QUEUE_URL\"" "SQS queue adapter drives KEDA queueURLFromEnv"
+assert_contains "${aws_manifest}" "karpenter.sh/nodepool: render-gpu" "AWS example schedules workers onto the GPU node pool"
+assert_contains "${aws_manifest}" "render.node/type: gpu-render" "AWS example labels workers for GPU render nodes"
+assert_contains "${aws_manifest}" "value: cpu-postprocess" "AWS example tolerates CPU postprocess nodes"
+assert_contains "${aws_manifest}" "karpenter.sh/nodepool: render-cpu" "AWS example schedules postprocess jobs onto the CPU node pool"
+assert_contains "${aws_manifest}" "karpenter.sh/capacity-type" "AWS example includes a postprocess capacity-type affinity hint"
 assert_not_contains "${aws_manifest}" "replicas:" "AWS KEDA example leaves replica count to autoscaling"
 
 cat >"${TMP_DIR}/pod-identity-adapter.yaml" <<'YAML'

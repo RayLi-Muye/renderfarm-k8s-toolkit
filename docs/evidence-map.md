@@ -5,7 +5,8 @@ This file maps resume claims to public repository evidence.
 | Claim | Evidence | How to Verify | Status | Boundary |
 | --- | --- | --- | --- | --- |
 | Kubernetes workload orchestration | `charts/render-worker/templates/deployment.yaml` | `make template` and inspect rendered worker `Deployment` | Implemented | Does not run a real renderer by default |
-| GPU-backed worker scheduling | `charts/render-worker/templates/deployment.yaml`, `examples/values-aws-gpu-sqs.yaml` | Render the AWS example and inspect `nvidia.com/gpu`, `nodeSelector`, and `tolerations` | Implemented | Does not provision GPU nodes |
+| GPU-backed worker scheduling | `charts/render-worker/templates/deployment.yaml`, `examples/values-aws-gpu-sqs.yaml`, `docs/scheduling.md` | Render the AWS example or run `make test`; inspect `nvidia.com/gpu`, GPU worker `nodeSelector`, and worker tolerations | Implemented | Does not provision GPU nodes, Karpenter NodePools, EKS Auto Mode pools, or managed node groups |
+| CPU postprocess scheduling | `charts/render-worker/templates/postprocess-job.yaml`, `examples/values-aws-gpu-sqs.yaml`, `docs/scheduling.md` | Render the AWS example or run `make test`; inspect the postprocess Job `nodeSelector`, tolerations, and affinity | Implemented | Does not create CPU nodes or run a live postprocess job |
 | Queue-driven scaling | `charts/render-worker/templates/keda-scaledobject.yaml` | Render the AWS example and inspect the KEDA `ScaledObject` | Implemented | No live AWS SQS queue is created |
 | KEDA scaler authentication | `charts/render-worker/templates/keda-triggerauthentication.yaml`, `examples/values-aws-gpu-sqs.yaml` | Render the AWS example and inspect `TriggerAuthentication` plus `authenticationRef` | Implemented | Cluster-level KEDA operator identity is configured outside this chart |
 | S3 asset and output workflow | `worker.env.ASSET_BUCKET`, `worker.env.OUTPUT_BUCKET`, `examples/values-aws-gpu-sqs.yaml` | Render examples and inspect worker environment variables | Implemented | No bucket or object storage is created |
@@ -26,4 +27,5 @@ This repository supports claims about reusable Kubernetes orchestration patterns
 - The public chart is intentionally renderer-agnostic. Private V-Ray worker images, licenses, assets, and customer values are out of scope.
 - The mock worker is a public-safe contract test and does not contain renderer binaries, licenses, customer scenes, or cloud credentials.
 - AWS examples use placeholder account IDs and resource names.
+- Scheduling examples use placeholder labels and taints. Private cluster infrastructure owns the actual Karpenter, EKS Auto Mode, or managed node group configuration.
 - Claims should be read as evidence of orchestration, packaging, and review discipline, not as proof of a deployed customer environment.

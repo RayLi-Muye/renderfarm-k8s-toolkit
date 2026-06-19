@@ -48,13 +48,20 @@ gpu:
   resourceName: nvidia.com/gpu
   count: 1
 
+# GPU render worker scheduling profile.
+# Karpenter NodePools or EKS Auto Mode node pools should be created outside this
+# chart and labeled/tainted to match these values.
 nodeSelector:
+  karpenter.sh/nodepool: render-gpu
   render.node/type: gpu-render
 
 tolerations:
-  - key: render
+  - key: render.node/type
     operator: Equal
-    value: gpu
+    value: gpu-render
+    effect: NoSchedule
+  - key: nvidia.com/gpu
+    operator: Exists
     effect: NoSchedule
 
 keda:
@@ -87,3 +94,23 @@ postprocessJob:
     AWS_REGION: us-east-1
     INPUT_PREFIX: s3://render-output-example/job-123/frames/
     OUTPUT_PREFIX: s3://render-output-example/job-123/final/
+  # CPU postprocess scheduling profile. Keep final assembly and packaging off
+  # GPU nodes so render GPUs stay available for frame workers.
+  nodeSelector:
+    karpenter.sh/nodepool: render-cpu
+    render.node/type: cpu-postprocess
+  tolerations:
+    - key: render.node/type
+      operator: Equal
+      value: cpu-postprocess
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 60
+          preference:
+            matchExpressions:
+              - key: karpenter.sh/capacity-type
+                operator: In
+                values:
+                  - spot
