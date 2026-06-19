@@ -54,7 +54,7 @@ It is not a full render manager, DCC integration, asset pipeline, AWS provisioni
 | Adapter seams | queue, storage, and identity values in examples and helper templates |
 | Local smoke path | `workers/mock-render-worker/`, `examples/mock-queue.txt`, and `make smoke-local` |
 | Example manifests | `examples/values-local.yaml`, `examples/values-local-minio.yaml`, and `examples/values-aws-gpu-sqs.yaml` |
-| Validation | `make test`, `scripts/render-examples.sh`, and GitHub Actions |
+| Validation | `make test`, `make render-examples`, and GitHub Actions |
 | Evidence map | `docs/evidence-map.md` |
 
 ## Quick Start
@@ -74,6 +74,12 @@ make template-minio
 make template
 ```
 
+Render every built-in example and run kubeconform when it is installed:
+
+```bash
+make render-examples
+```
+
 Run the public mock worker smoke test without AWS credentials, a real renderer, or a Kubernetes cluster:
 
 ```bash
@@ -89,12 +95,12 @@ Common validation commands:
 ```bash
 make lint
 make test
+make render-examples
 make smoke-local
-scripts/render-examples.sh
 git diff --check
 ```
 
-`make test` runs chart contract tests for GPU/KEDA rendering behavior and values schema rejection. `scripts/render-examples.sh` renders the built-in examples and validates manifests with kubeconform when available. CI installs pinned Helm and kubeconform versions before running the same chart validation path.
+`make test` runs chart contract tests for GPU/KEDA rendering behavior and values schema rejection. `make render-examples` renders the built-in examples and validates manifests with kubeconform when available. CI installs pinned Helm and kubeconform versions before running the same chart validation path.
 
 See `docs/development.md` for the issue, branch, pull request, and validation workflow.
 
